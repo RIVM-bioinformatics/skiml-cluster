@@ -1,0 +1,12 @@
+logo: "SKIML cluster"
+tagline: "A pipeline to cluster VCF files"
+font: "cybermedium"
+annotations:
+  input:
+    type: Path
+    help: "Path to the input directory"
+    required: True
+  output:
+    type: Path
+    help: "Path to the output directory"
+    required: True

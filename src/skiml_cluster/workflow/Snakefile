@@ -1,0 +1,82 @@
+configfile: "config.yaml"
+
+
+INPUT_DIR = config["input"]
+OUTPUT_DIR = config["output"]
+
+(SAMPLES,) = glob_wildcards(INPUT_DIR + "/{sample}.vcf")
+
+
+rule all:
+    input:
+        OUTPUT_DIR + "/tree.nwk",
+        OUTPUT_DIR + "/vcf_snp.aln.fasta",
+        OUTPUT_DIR + "/snp_distance_matrix.tsv",
+
+
+rule index_vcf:
+    input:
+        INPUT_DIR + "/{sample}.vcf",
+    output:
+        vcf=OUTPUT_DIR + "/vcf/{sample}.vcf.gz",
+        tbi=OUTPUT_DIR + "/vcf/{sample}.vcf.gz.tbi",
+    conda:
+        "envs/main.yaml"
+    shell:
+        """
+        bgzip -c {input} > {output.vcf}
+        tabix -p vcf {output.vcf}
+        """
+
+
+rule merge_vcf:
+    input:
+        vcf=expand(OUTPUT_DIR + "/vcf/{sample}.vcf.gz", sample=SAMPLES),
+        tbi=expand(OUTPUT_DIR + "/vcf/{sample}.vcf.gz.tbi", sample=SAMPLES),
+    output:
+        OUTPUT_DIR + "/merged.vcf",
+    conda:
+        "envs/main.yaml"
+    shell:
+        """
+        vcf-merge {input.vcf} > {output}
+        """
+
+
+rule make_tree:
+    input:
+        OUTPUT_DIR + "/merged.vcf",
+    output:
+        OUTPUT_DIR + "/tree.nwk",
+    conda:
+        "envs/main.yaml"
+    shell:
+        """
+        vk phylo tree upgma {input} > {output}
+        """
+
+
+rule make_aln:
+    input:
+        OUTPUT_DIR + "/merged.vcf",
+    output:
+        OUTPUT_DIR + "/vcf_snp.aln.fasta",
+    conda:
+        "envs/main.yaml"
+    shell:
+        """
+        vk phylo fasta {input} > {output}
+        """
+
+
+rule make_dist:
+    input:
+        OUTPUT_DIR + "/vcf_snp.aln.fasta",
+    output:
+        OUTPUT_DIR + "/snp_distance_matrix.tsv",
+    conda:
+        "envs/main.yaml"
+    shell:
+        """
+        snp-dists {input} > {output}
+        """

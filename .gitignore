@@ -1,3 +1,4 @@
 *.conda
 .snakemake
 .vscode
+*.pyc

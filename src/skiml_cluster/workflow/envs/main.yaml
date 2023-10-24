@@ -1,0 +1,9 @@
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- vcfkit==0.2.9
+- snp-dists==0.8.2
+- vcftools==0.1.16
+- python>=3.7
+- muscle<5.1
