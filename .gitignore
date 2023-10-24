@@ -1,0 +1,3 @@
+*.conda
+.snakemake
+.vscode
