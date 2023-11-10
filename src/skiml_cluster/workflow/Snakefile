@@ -1,10 +1,39 @@
+import os
+
+
 configfile: "config.yaml"
+
+
+# Restrict wildcard expansion to prevent globbing through subdirectories
+wildcard_constraints:
+    sample="[^\/]+",
 
 
 INPUT_DIR = config["input"]
 OUTPUT_DIR = config["output"]
 
+# Raise error if input dir does not exist
+if not os.path.exists(INPUT_DIR):
+    raise ValueError("Input directory does not exist.")
+
+# Raise error if output dir exists and is not a directory
+if os.path.exists(OUTPUT_DIR) and not os.path.isdir(OUTPUT_DIR):
+    raise ValueError("Output directory is not a directory.")
+
+# Check if input dir is apollo_mapping_output, if so, set input dir to variants/snps subfolder
+if (
+    os.path.exists(INPUT_DIR + "/variants/snps")
+    and os.path.exists(INPUT_DIR + "/variants/raw")
+    and os.path.exists(INPUT_DIR + "/variants/marked")
+    and os.path.exists(INPUT_DIR + "/audit_trail")
+    and os.path.exists(INPUT_DIR + "/clean_fastq")
+):
+    INPUT_DIR = INPUT_DIR + "/variants/snps"
+
 (SAMPLES,) = glob_wildcards(INPUT_DIR + "/{sample}.vcf")
+
+if len(SAMPLES) == 0:
+    raise ValueError("No VCF files found in input directory.")
 
 
 rule all:
