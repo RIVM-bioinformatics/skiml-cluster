@@ -78,7 +78,7 @@ rule make_tree:
     output:
         OUTPUT_DIR + "/tree.nwk",
     conda:
-        "envs/main.yaml"
+        "envs/vk.yaml"
     shell:
         """
         vk phylo tree upgma {input} > {output}
@@ -91,7 +91,7 @@ rule make_aln:
     output:
         OUTPUT_DIR + "/vcf_snp.aln.fasta",
     conda:
-        "envs/main.yaml"
+        "envs/vk.yaml"
     shell:
         """
         vk phylo fasta {input} > {output}

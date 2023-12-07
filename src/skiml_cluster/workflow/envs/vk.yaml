@@ -3,7 +3,5 @@ channels:
 - conda-forge
 - nodefaults
 dependencies:
-- snp-dists==0.8.2
-- vcftools==0.1.16
-- python>=3.7
-- samtools
+- vcfkit==0.2.9
+- muscle<5.1
