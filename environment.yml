@@ -1,0 +1,11 @@
+channels:
+- conda-forge
+- bioconda
+dependencies:
+- pip
+- python=3.10
+- datrie=0.8.2
+- pip:
+  - snk==0.13.0
+  - pulp==2.7.0
+  - skiml-cluster==0.0.6

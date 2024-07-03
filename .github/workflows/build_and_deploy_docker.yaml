@@ -1,0 +1,67 @@
+# This workflow is based on part of the staphb workflow at https://github.com/StaPH-B/docker-builds/blob/master/.github/workflows/build-to-deploy.yml
+
+name: Docker - build and deploy image
+
+on:
+  workflow_dispatch:
+    inputs:
+      path_to_context:
+        required: true
+        type: string
+      dockerfile_name:
+        default: Dockerfile
+        required: false
+        type: string
+      ghcr_repository_name:
+        default: boasvdp
+        required: false
+        type: string
+      IMAGE_NAME:
+        required: true
+        type: string
+      version:
+        required: false
+        default: latest
+        type: string
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ inputs.ghcr_repository_name}}/${{ inputs.IMAGE_NAME }}
+          tags: |
+            ${{ inputs.version }}
+
+      - name: Build and push to ghcr.io
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ inputs.path_to_context }}
+          file: ${{ inputs.path_to_context }}/${{ inputs.dockerfile_name }}
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
