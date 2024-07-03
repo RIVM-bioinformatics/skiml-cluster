@@ -5,19 +5,9 @@ name: Docker - build and deploy image
 on:
   workflow_dispatch:
     inputs:
-      path_to_context:
-        required: true
-        type: string
       dockerfile_name:
         default: Dockerfile
         required: false
-        type: string
-      ghcr_repository_name:
-        default: boasvdp
-        required: false
-        type: string
-      IMAGE_NAME:
-        required: true
         type: string
       version:
         required: false
@@ -48,7 +38,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/${{ inputs.ghcr_repository_name}}/${{ inputs.IMAGE_NAME }}
+            ghcr.io/rivm-bioinformatics/skiml-cluster
           tags: |
             ${{ inputs.version }}
 
@@ -56,8 +46,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v3
         with:
-          context: ${{ inputs.path_to_context }}
-          file: ${{ inputs.path_to_context }}/${{ inputs.dockerfile_name }}
+          context: .
+          file: ./${{ inputs.dockerfile_name }}
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
