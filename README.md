@@ -34,6 +34,22 @@ However, please do this with care as some steps might require a lot of resources
 
 ## Installation
 
+### Container (e.g. using Singularity)
+
+A container is available for skiml-cluster. Read more about containers here: https://docs.sylabs.io/guides/latest/user-guide/.
+
+```console
+singularity pull "docker://ghcr.io/rivm-bioinformatics/skiml-cluster:0.0.3"
+```
+
+When running the container, make sure you are binding paths, because the container otherwise doesn't have access to your file system:
+
+```console
+singularity exec --bind /home/user/project1:/home/user/project1 skiml-cluster_0.0.3.sif skiml-cluster run --input /home/user/project1/input_data --output /home/user/project1/output_data
+```
+
+### PyPI
+
 ```console
 pip install --user skiml-cluster
 ```
